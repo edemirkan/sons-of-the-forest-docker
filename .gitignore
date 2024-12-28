@@ -1,0 +1,4 @@
+.env
+compose.yml
+local.dedicatedserver.cfg
+local.ownerswhitelist.txt
