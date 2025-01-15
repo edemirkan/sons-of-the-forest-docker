@@ -14,11 +14,11 @@ ENV PUID=1000
 ################## BEGIN INSTALLATION ######################
 
 # Create the application user
-RUN userdel -r $(getent passwd $PUID | cut -d: -f1) \
- && useradd -u $PUID -m -d $HOME $USER
+RUN userdel -r $(getent passwd ${PUID} | cut -d: -f1) \
+ && useradd -u ${PUID} -m -d ${HOME} ${USER}
 
 # Create required directories
-RUN mkdir -p $HOME/userdata
+RUN mkdir -p ${HOME}/userdata
 
 # Install prerequisites
 RUN apt-get update -y \
@@ -26,12 +26,13 @@ RUN apt-get update -y \
  && rm -rf /var/lib/apt/lists/*
 
 # Download the application via steamcmd
-RUN steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir $HOME +login anonymous +app_update 2465200 validate +quit
+RUN steamcmd +@sSteamCmdForcePlatformType windows +force_install_dir ${HOME} +login anonymous +app_update 2465200 validate +quit
 
 # Copy configuration
-COPY config/dedicatedserver.cfg $HOME/userdata/dedicatedserver.cfg
-COPY config/ownerswhitelist.txt $HOME/userdata/ownerswhitelist.txt
-COPY entrypoint.sh   $HOME/entrypoint.sh
+COPY config/dedicatedserver.cfg ${HOME}/userdata/dedicatedserver.cfg
+COPY config/ownerswhitelist.txt ${HOME}/userdata/ownerswhitelist.txt
+COPY config/steam_appid.txt ${HOME}/steam_appid.txt
+COPY entrypoint.sh   ${HOME}/entrypoint.sh
 
 ##################### INSTALLATION END #####################
 
@@ -39,16 +40,16 @@ COPY entrypoint.sh   $HOME/entrypoint.sh
 EXPOSE 8766/udp 27016/udp 9700/udp
 
 # Correct file permissions
-RUN chown -R $USER $HOME/userdata \
- && chmod +x $HOME/entrypoint.sh \
+RUN chown -R ${USER} ${HOME}/userdata \
+ && chmod +x ${HOME}/entrypoint.sh \
  && ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime \
  && echo $TIMEZONE > /etc/timezone
 
 # Switch to user
-USER $USER
+USER ${USER}
 
 # Working directory
-WORKDIR $HOME
+WORKDIR ${HOME}
 
 # Set default container command
 ENTRYPOINT ["/bin/sh", "entrypoint.sh"]
